@@ -25,11 +25,21 @@ export default function DashboardPage() {
   const loadFunctions = async () => {
     try {
       const data = await apiClient.listFunctions();
-      setFunctions(data || []);
+      console.log("API Response:", data); // Debug log
+      // Handle both array and object responses
+      if (Array.isArray(data)) {
+        setFunctions(data);
+      } else if (data && typeof data === "object" && "functions" in data) {
+        const response = data as { functions?: FunctionItem[] };
+        setFunctions(response.functions || []);
+      } else {
+        setFunctions([]);
+      }
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to load functions";
       setError(errorMessage);
+      setFunctions([]);
     } finally {
       setIsLoading(false);
     }

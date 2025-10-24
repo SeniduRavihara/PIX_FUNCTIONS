@@ -7,13 +7,19 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	
+	"github.com/joho/godotenv"
+
 	"github.com/voltrun/backend/internal/api"
 	"github.com/voltrun/backend/internal/storage"
 	"github.com/voltrun/backend/internal/utils"
 )
 
 func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, using environment variables")
+	}
+
 	// Load configuration
 	config := utils.LoadConfig()
 
@@ -27,7 +33,7 @@ func main() {
 
 	// Initialize database
 	if err := storage.InitDB(); err != nil {
-		utils.Error("Failed to initialize database", nil)
+		utils.Error("Failed to initialize database")
 		log.Fatalf("Database initialization failed: %v", err)
 	}
 
@@ -39,7 +45,7 @@ func main() {
 			if e, ok := err.(*fiber.Error); ok {
 				code = e.Code
 			}
-			utils.Error("Request error", nil)
+			utils.Error("Request error")
 			return c.Status(code).JSON(fiber.Map{
 				"error": err.Error(),
 			})
@@ -73,7 +79,7 @@ func main() {
 	log.Printf("� API endpoint: http://localhost:%s/api", config.Port)
 	
 	if err := app.Listen(":" + config.Port); err != nil {
-		utils.Error("Server failed to start", nil)
+		utils.Error("Server failed to start")
 		log.Fatal(err)
 	}
 }

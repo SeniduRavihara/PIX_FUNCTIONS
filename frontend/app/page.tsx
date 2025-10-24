@@ -1,28 +1,6 @@
-"use client";
-
-import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Home() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      router.push("/dashboard");
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -30,16 +8,10 @@ export default function Home() {
           <div className="text-3xl font-bold text-indigo-600">⚡ VoltRun</div>
           <div className="space-x-4">
             <Link
-              href="/login"
-              className="text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-md font-medium"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
+              href="/dashboard"
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium"
             >
-              Get Started
+              Go to Dashboard
             </Link>
           </div>
         </header>
