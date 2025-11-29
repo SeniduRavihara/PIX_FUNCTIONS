@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/voltrun/backend/internal/runners"
 	"github.com/voltrun/backend/internal/storage"
 	"github.com/voltrun/backend/internal/vm"
 )
@@ -145,25 +146,35 @@ func (e *ExecutionEngine) executeInVM(ctx context.Context, vm *vm.VM, function *
 
 // executeNodeJS executes Node.js code
 func (e *ExecutionEngine) executeNodeJS(ctx context.Context, function *storage.Function, input map[string]interface{}) (*ExecutionResult, error) {
-	// TODO: Implement Node.js execution
+	runner := &runners.NodeRunner{}
+	timeout := time.Duration(function.TimeoutSec) * time.Second
+	
+	result, err := runner.Execute(ctx, function.Code, input, timeout)
+	if err != nil {
+		return nil, fmt.Errorf("node execution failed: %w", err)
+	}
+	
 	return &ExecutionResult{
-		Output: map[string]interface{}{
-			"message": "Node.js execution placeholder",
-			"input":   input,
-		},
-		Logs: "Function executed successfully (placeholder)",
+		Output:     result.Output,
+		Logs:       result.Logs,
+		DurationMS: result.DurationMS,
 	}, nil
 }
 
 // executePython executes Python code
 func (e *ExecutionEngine) executePython(ctx context.Context, function *storage.Function, input map[string]interface{}) (*ExecutionResult, error) {
-	// TODO: Implement Python execution
+	runner := &runners.PythonRunner{}
+	timeout := time.Duration(function.TimeoutSec) * time.Second
+	
+	result, err := runner.Execute(ctx, function.Code, input, timeout)
+	if err != nil {
+		return nil, fmt.Errorf("python execution failed: %w", err)
+	}
+	
 	return &ExecutionResult{
-		Output: map[string]interface{}{
-			"message": "Python execution placeholder",
-			"input":   input,
-		},
-		Logs: "Function executed successfully (placeholder)",
+		Output:     result.Output,
+		Logs:       result.Logs,
+		DurationMS: result.DurationMS,
 	}, nil
 }
 

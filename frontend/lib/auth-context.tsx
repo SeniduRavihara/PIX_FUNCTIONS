@@ -28,8 +28,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check if user is already logged in
     const token = apiClient.getToken();
     if (token) {
-      // TODO: Validate token and fetch user data
-      setIsLoading(false);
+      // Validate token and fetch user data
+      apiClient
+        .getCurrentUser()
+        .then((response) => {
+          setUser(response.user);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch user:", error);
+          // Token is invalid, clear it
+          apiClient.logout();
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }
@@ -42,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string, name: string) => {
     const response = await apiClient.register({ email, password, name });
+    apiClient.setToken(response.token);
     setUser(response.user);
   };
 

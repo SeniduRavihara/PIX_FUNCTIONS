@@ -99,6 +99,10 @@ class ApiClient {
     this.setToken(null);
   }
 
+  async getCurrentUser(): Promise<{ user: User }> {
+    return this.request<{ user: User }>("/auth/me");
+  }
+
   // Function endpoints
   async listFunctions() {
     return this.request("/functions");

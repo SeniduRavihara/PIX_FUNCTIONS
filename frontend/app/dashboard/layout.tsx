@@ -1,7 +1,32 @@
+"use client";
+
+import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ReactNode, useEffect } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const { user, isLoading, logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -37,7 +62,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </nav>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">Demo User</span>
+              <span className="text-sm text-gray-700">
+                {user.name || user.email}
+              </span>
+              <button
+                onClick={logout}
+                className="text-sm text-gray-700 hover:text-indigo-600"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
