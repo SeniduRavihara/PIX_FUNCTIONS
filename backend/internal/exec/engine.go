@@ -10,6 +10,7 @@ import (
 	"github.com/voltrun/backend/internal/runners"
 	"github.com/voltrun/backend/internal/storage"
 	"github.com/voltrun/backend/internal/vm"
+	"gorm.io/datatypes"
 )
 
 // ExecutionEngine handles function execution
@@ -134,7 +135,19 @@ func (e *ExecutionEngine) executeInVM(ctx context.Context, vm *vm.VM, function *
 	// This is a placeholder that simulates execution
 	
 	// Based on runtime, dispatch to appropriate runner
-	switch function.Runtime {
+	runtime := function.Runtime
+	
+	// Normalize Node.js runtime versions to "nodejs"
+	if runtime == "nodejs" || runtime == "nodejs18" || runtime == "nodejs20" || runtime == "nodejs22" {
+		runtime = "nodejs"
+	}
+	
+	// Normalize Python runtime versions to "python"
+	if runtime == "python" || runtime == "python3.9" || runtime == "python3.10" || runtime == "python3.11" || runtime == "python3.12" {
+		runtime = "python"
+	}
+	
+	switch runtime {
 	case "nodejs":
 		return e.executeNodeJS(ctx, function, input)
 	case "python":
@@ -196,8 +209,8 @@ func (e *ExecutionEngine) updateExecutionError(execution *storage.Execution, err
 	storage.DB.Save(execution)
 }
 
-// marshalJSON converts a map to JSON string
-func marshalJSON(data interface{}) string {
+// marshalJSON converts a map to JSON bytes
+func marshalJSON(data interface{}) datatypes.JSON {
 	bytes, _ := json.Marshal(data)
-	return string(bytes)
+	return datatypes.JSON(bytes)
 }

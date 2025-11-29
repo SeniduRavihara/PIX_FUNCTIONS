@@ -377,7 +377,7 @@ func executeFunction(c *fiber.Ctx) error {
 		req.Input = make(map[string]interface{})
 	}
 
-	// Marshal input to JSON
+	// Marshal input to JSON bytes for JSONB
 	inputJSON, err := json.Marshal(req.Input)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid input format"})
@@ -390,7 +390,7 @@ func executeFunction(c *fiber.Ctx) error {
 		UserID:     userID,
 		FunctionID: function.ID,
 		Status:     "pending",
-		Input:      string(inputJSON),
+		Input:      inputJSON,
 	}
 
 	if err := storage.DB.Create(&execution).Error; err != nil {
@@ -552,10 +552,10 @@ func deleteAPIKey(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "API key deleted successfully"})
 }
 
-// marshalJSON converts a map to JSON string
-func marshalJSON(data interface{}) string {
+// marshalJSON converts a map to JSON bytes for JSONB
+func marshalJSON(data interface{}) []byte {
 	bytes, _ := json.Marshal(data)
-	return string(bytes)
+	return bytes
 }
 
 // executeAsync executes a function asynchronously

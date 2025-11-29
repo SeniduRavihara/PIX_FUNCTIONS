@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -42,19 +43,19 @@ type Function struct {
 
 // Execution represents a single function execution
 type Execution struct {
-	ID         uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	UserID     uuid.UUID `gorm:"type:uuid;not null;index" json:"user_id"`
-	FunctionID uuid.UUID `gorm:"type:uuid;not null;index" json:"function_id"`
-	Status     string    `gorm:"default:pending" json:"status"` // pending, running, success, failed
-	Input      string    `gorm:"type:jsonb" json:"input"`
-	Output     string    `gorm:"type:jsonb" json:"output"`
-	Error      string    `gorm:"type:text" json:"error,omitempty"`
-	Logs       string    `gorm:"type:text" json:"logs"`
-	DurationMS int64     `json:"duration_ms"`
-	MemoryUsed int       `json:"memory_used"` // in MB
-	StartedAt  *time.Time `json:"started_at,omitempty"`
-	CompletedAt *time.Time `json:"completed_at,omitempty"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID         uuid.UUID      `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	UserID     uuid.UUID      `gorm:"type:uuid;not null;index" json:"user_id"`
+	FunctionID uuid.UUID      `gorm:"type:uuid;not null;index" json:"function_id"`
+	Status     string         `gorm:"default:pending" json:"status"` // pending, running, success, failed
+	Input      datatypes.JSON `gorm:"type:jsonb" json:"input"`
+	Output     datatypes.JSON `gorm:"type:jsonb" json:"output"`
+	Error      string         `gorm:"type:text" json:"error,omitempty"`
+	Logs       string         `gorm:"type:text" json:"logs"`
+	DurationMS int64          `json:"duration_ms"`
+	MemoryUsed int            `json:"memory_used"` // in MB
+	StartedAt  *time.Time     `json:"started_at,omitempty"`
+	CompletedAt *time.Time    `json:"completed_at,omitempty"`
+	CreatedAt  time.Time      `json:"created_at"`
 
 	User     User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	Function Function `gorm:"foreignKey:FunctionID" json:"function,omitempty"`
